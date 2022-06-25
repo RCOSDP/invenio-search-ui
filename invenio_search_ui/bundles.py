@@ -71,6 +71,6 @@ js = NpmBundle(
         'angular-loading-bar': '~0.9.0',
         'd3': '^3.5.17',
         #'invenio-search-js': '^1.3.1',
-        'invenio-search-js': 'github:RCOSDP/invenio-search-js#feature/changePaginationForSearchAfterUse',
+        'invenio-search-js': 'git+https://github.com/RCOSDP/invenio-search-js#feature/changePaginationForSearchAfterUse',
     },
 )
