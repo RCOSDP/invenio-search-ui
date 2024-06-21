@@ -1,33 +1,15 @@
 # -*- coding: utf-8 -*-
 #
 # This file is part of Invenio.
-# Copyright (C) 2015, 2016 CERN.
+# Copyright (C) 2015-2022 CERN.
 #
-# Invenio is free software; you can redistribute it
-# and/or modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2 of the
-# License, or (at your option) any later version.
-#
-# Invenio is distributed in the hope that it will be
-# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with Invenio; if not, write to the
-# Free Software Foundation, Inc., 59 Temple Place, Suite 330, Boston,
-# MA 02111-1307, USA.
-#
-# In applying this license, CERN does not
-# waive the privileges and immunities granted to it by virtue of its status
-# as an Intergovernmental Organization or submit itself to any jurisdiction.
+# Invenio is free software; you can redistribute it and/or modify it
+# under the terms of the MIT License; see LICENSE file for more details.
 
 """UI for Invenio-Search."""
 
-from __future__ import absolute_import, print_function
-
 from . import config
-from .views import blueprint
+from .views import blueprint, search
 
 
 class InvenioSearchUI(object):
@@ -47,8 +29,10 @@ class InvenioSearchUI(object):
         :param app: The Flask application.
         """
         self.init_config(app)
-        app.register_blueprint(blueprint)
-        app.extensions['invenio-search-ui'] = self
+        app.extensions["invenio-search-ui"] = self
+
+        search_view = app.config.get("SEARCH_UI_SEARCH_VIEW", search)
+        blueprint.add_url_rule("/search", "search", view_func=search_view)
 
     def init_config(self, app):
         """Initialize configuration.
@@ -56,14 +40,12 @@ class InvenioSearchUI(object):
         :param app: The Flask application.
         """
         app.config.setdefault(
-            'SEARCH_UI_BASE_TEMPLATE',
-            app.config.get('BASE_TEMPLATE', 'invenio_search_ui/base.html')
+            "SEARCH_UI_BASE_TEMPLATE", app.config.get("BASE_TEMPLATE")
         )
         app.config.setdefault(
-            'SEARCH_UI_HEADER_TEMPLATE',
-            app.config.get('HEADER_TEMPLATE',
-                           'invenio_search_ui/base_header.html')
+            "SEARCH_UI_HEADER_TEMPLATE", app.config.get("HEADER_TEMPLATE")
         )
+
         for k in dir(config):
-            if k.startswith('SEARCH_UI_'):
+            if k.startswith("SEARCH_UI_"):
                 app.config.setdefault(k, getattr(config, k))
